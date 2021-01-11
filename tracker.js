@@ -113,6 +113,10 @@ $(".ip_input").submit( function(e) {
     e.preventDefault();
 });
 
+// Set separators height to 60% of info dashboard height
+
+function resizeSeparators() { $(".ip_info_separator").css("height",`${ 0.6 * $(".ip_info_wrapper").height() }`); }
+
 function getGeolocationFromIp(given_ip){
     
     // Validation and request
@@ -138,11 +142,9 @@ function getGeolocationFromIp(given_ip){
             $("#location .ip_info_value").text(geolocation["city"] + ", " + geolocation["postalCode"] + " " + geolocation["region"]);
             $("#timezone .ip_info_value").text(`UTC${geolocation["timezone"]}`);
             $("#isp .ip_info_value").text(data["isp"]);
-
-            // Showing the neat, gray separators using jQuery since JS is still being used either way, so w/e
-
-            if ( $(".ip_info_separator").css("display") == "none" && window.matchMedia('(max-width: 375px)').matches == false ) $(".ip_info_separator").css("display", "inline");
             
+            resizeSeparators();
+
         }
         else {
 
