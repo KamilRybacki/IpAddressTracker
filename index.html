@@ -31,8 +31,8 @@
   <header id="ip_banner">
     <h1 class="ip_title">IP Address Tracker</h1>
     <form class="ip_input">
-      <input type="text" class="ip_input_text" id="ip" placeholder="Search for any IP address or domain" onfocus="this.value=''">   
-      <button class="ip_input_button" onclick="getGeolocationFromIp($('#ip').val())"><img src="images/icon-arrow.svg" alt=""></button>
+      <input type="text" class="ip_input_text" id="ip" placeholder="Search for any IP address or domain" onfocus="this.value=''" name="input_ip" aria-label="IP or domain to look up">   
+      <button class="ip_input_button" onclick="getGeolocationFromIp($('#ip').val())" aria-label="Send"><img src="images/icon-arrow.svg" alt=""></button>
     </form>
   </header>
   
@@ -40,28 +40,28 @@
 
     <section class="ip_info_field" id="address">
       <h2 class="ip_info_header">IP Address</h2>
-      <h3 class="ip_info_value"></h3>
+      <p class="ip_info_value"></p>
     </section>
 
     <div class="ip_info_separator"></div>
 
     <section class="ip_info_field" id="location">
       <h2 class="ip_info_header">Location</h2>
-      <h3 class="ip_info_value"></h3>
+      <p class="ip_info_value"></p>
     </section>
 
     <div class="ip_info_separator"></div>
 
     <section class="ip_info_field" id="timezone">
       <h2 class="ip_info_header">Timezone</h2>
-      <h3 class="ip_info_value"></h3> 
+      <p class="ip_info_value"></p> 
     </section>
 
     <div class="ip_info_separator"></div>
 
     <section class="ip_info_field" id="isp">
       <h2 class="ip_info_header">ISP</h2>
-      <h3 class="ip_info_value"></h3>
+      <p class="ip_info_value"></p>
     </section>
     
   </main>
