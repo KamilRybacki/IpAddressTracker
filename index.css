@@ -200,6 +200,20 @@ body {
     
 }
 
+.ip_info_separator {
+
+    display: none;
+
+    position: relative;
+    top: 25px;
+
+    width: 1px;
+    height: 80px;
+    
+    border: 1px solid lightgray;
+
+}
+
 .ip_info_value {
     
     font-size: 24px;

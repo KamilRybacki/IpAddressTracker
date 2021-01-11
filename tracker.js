@@ -1,3 +1,6 @@
+// This is for future use, I've coded this function to convert time offset to UTC timezone
+// It was useful for different geoIP API provider. Now, it sits here. Waiting.
+
 function convertOffsetToUTCLabel(offset){
 
     offset_seconds = data["offset"];
@@ -22,14 +25,25 @@ function convertOffsetToUTCLabel(offset){
     return utc_string;
 }
 
+// Initialize map at London. Why? Otherwise we'll have big white box. Bleh.
+
 var map = L.map('mapid').setView([51.505, -0.09], 13);
+
+// Plz don't steal, I am still learning, Internet is scary
+
 var api_key = "at_f37LhNwgglrkSTbl0pCR6sgPN23Na";
+
+// Free map - cool because it's free
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
+// Initialize layer on the map to put and wipe off markers fromm
+
 var marker_group = L.layerGroup().addTo(map);
+
+// Cool minimalistic pin
 
 var myPin =  L.icon({
 
@@ -40,12 +54,20 @@ var myPin =  L.icon({
     shadowSize:   [0, 0] 
 })
 
+// Quick user's IP fetch at page load 
+
 window.onload = function() {
 
     $.getJSON("https://api.ipify.org?format=json", function(data) { getGeolocationFromIp(data.ip); });
     map.removeControl(map.zoomControl);
 
 };
+
+// Sets marker on a map at selected [lat,lon] location
+// and panning the map to view which puts marker at approx 20% screen height
+// This is done by converting [lat,lon] position at the map to physical [x,y] position
+// (in pixels) on screen. Then the aforementioned pan offset is added and the inverse
+// transformation takes place
 
 function setLocationOnMap(lat, lon, zoom){
 
@@ -56,12 +78,8 @@ function setLocationOnMap(lat, lon, zoom){
     
     pixelPosition = map.latLngToLayerPoint([lat,lon]);
     
-    if (window.matchMedia('(max-width: 375px)').matches) {
-        media_percent = 0.15;    
-    } 
-    else {
-        media_percent = 0.25;
-    }
+    if (window.matchMedia('(max-width: 375px)').matches) media_percent = 0.15;    
+    else media_percent = 0.25;
     
     pixelPosition.y = media_percent * $("#mapid").height();
     
@@ -71,16 +89,25 @@ function setLocationOnMap(lat, lon, zoom){
 
 };
 
+// Stolen cold-heartedly from Internet (probably StackOverflow)
+
+var _ip_regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+var _url_regex = `^(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$`;
+
+// Validation functions - important for choosing correct AJAX request for IPify and general validation reasons
+
 function isIPAddress(ipaddress) 
 {
- if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)){ return (true); }
- return (false);
+    if (_ip_regex.test(ipaddress)) return (true);
+    return (false);
 }
 
 function isValidURL(str) {
-    var pattern = new RegExp(`^(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$` /* protocol*/ /* domain name*/ /* OR ip (v4) address*/ /* port and path*/ /* query string*/,'i'); // fragment locator
+    var pattern = new RegExp(_url_regex,'i'); // fragment locator
     return !!pattern.test(str);
 }
+
+// Prevent page refresh after form submission
 
 $(".ip_input").submit( function(e) {
     e.preventDefault();
@@ -94,14 +121,14 @@ function getGeolocationFromIp(given_ip){
     else if (isValidURL(given_ip))  geolocationRequest = $.ajax({  url: `https://geo.ipify.org/api/v1?apiKey=${api_key}&domain=${given_ip}` });
     else                            window.alert("Invalid domain/IP!");
     
+    // Plugging stuff from JSON to correct fields by use of jQuery and selectors in .css sheet
+    
     geolocationRequest.done( (data) => {
 
         geolocation = data["location"]
 
         return_lat = geolocation["lat"];
         return_lon = geolocation["lng"];
-        
-        console.log(data)
 
         if (return_lat != undefined && return_lon != undefined){
 
@@ -111,6 +138,10 @@ function getGeolocationFromIp(given_ip){
             $("#location .ip_info_value").text(geolocation["city"] + ", " + geolocation["postalCode"] + " " + geolocation["region"]);
             $("#timezone .ip_info_value").text(`UTC${geolocation["timezone"]}`);
             $("#isp .ip_info_value").text(data["isp"]);
+
+            // Showing the neat, gray separators using jQuery since JS is still being used either way, so w/e
+
+            if ( $(".ip_info_separator").css("display") == "none" ) $(".ip_info_separator").css("display", "inline");
             
         }
         else {
@@ -121,5 +152,4 @@ function getGeolocationFromIp(given_ip){
         }
     }).fail( () => {}).always( () => {} );
 
-    
 }
