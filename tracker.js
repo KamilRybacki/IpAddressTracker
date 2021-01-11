@@ -141,7 +141,7 @@ function getGeolocationFromIp(given_ip){
 
             // Showing the neat, gray separators using jQuery since JS is still being used either way, so w/e
 
-            if ( $(".ip_info_separator").css("display") == "none" ) $(".ip_info_separator").css("display", "inline");
+            if ( $(".ip_info_separator").css("display") == "none" && window.matchMedia('(max-width: 375px)').matches == false ) $(".ip_info_separator").css("display", "inline");
             
         }
         else {
