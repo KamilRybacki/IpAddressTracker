@@ -1,3 +1,27 @@
+function convertOffsetToUTCLabel(offset){
+
+    offset_seconds = data["offset"];
+    offset_hours = Math.abs(Math.floor(offset_seconds / 3600));
+    offset_minutes = (Math.abs(offset_seconds) - offset_hours * 3600) / 60;
+
+    if (offset_hours < 10)
+        offset_hours_string = `0${offset_hours}`;
+    else
+        offset_hours_string = `${offset_hours}`;
+
+    if (offset_minutes < 10)
+        offset_minutes_string = `0${offset_minutes}`;
+    else
+        offset_minutes_string = `${offset_minutes}`;
+
+    if (offset_seconds < 0)
+        utc_string = `UTC -${offset_hours_string}:${offset_minutes_string}`;
+    if (offset_seconds > 0)
+        utc_string = `UTC +${offset_hours_string}:${offset_minutes_string}`;
+
+    return utc_string;
+}
+
 var map = L.map('mapid').setView([51.505, -0.09], 13);
 var api_key = "at_f37LhNwgglrkSTbl0pCR6sgPN23Na";
 
@@ -18,7 +42,7 @@ var myPin =  L.icon({
 
 window.onload = function() {
 
-    $.getJSON("https://ip4.seeip.org/json", function(data) { getGeolocationFromIp(data.ip); });
+    $.getJSON("https://api.ipify.org?format=json", function(data) { getGeolocationFromIp(data.ip); });
     map.removeControl(map.zoomControl);
 
 };
@@ -64,56 +88,38 @@ $(".ip_input").submit( function(e) {
 
 function getGeolocationFromIp(given_ip){
     
-    if( isIPAddress(given_ip) || isValidURL(given_ip) ){
+    // Validation and request
 
-        $.ajax({
-            url: `http://ip-api.com/json/${given_ip}?fields=33604345`
-            }).done( (data) => {
+    if( isIPAddress(given_ip) )     geolocationRequest = $.ajax({  url: `https://geo.ipify.org/api/v1?apiKey=${api_key}&ipAddress=${given_ip}` });        
+    else if (isValidURL(given_ip))  geolocationRequest = $.ajax({  url: `https://geo.ipify.org/api/v1?apiKey=${api_key}&domain=${given_ip}` });
+    else                            window.alert("Invalid domain/IP!");
+    
+    geolocationRequest.done( (data) => {
 
-                return_lat = data["lat"];
-                return_lon = data["lon"];
-                
-                if (return_lat != undefined && return_lon != undefined){
+        geolocation = data["location"]
 
-                    setLocationOnMap(return_lat, return_lon, 12);
-
-                    offset_seconds = data["offset"];
-                    offset_hours = Math.abs(Math.floor(offset_seconds / 3600));
-                    offset_minutes = (Math.abs(offset_seconds) - offset_hours * 3600) / 60;
-
-                    if (offset_hours < 10)
-                        offset_hours_string = `0${offset_hours}`;
-                    else
-                        offset_hours_string = `${offset_hours}`;
-
-                    if (offset_minutes < 10)
-                        offset_minutes_string = `0${offset_minutes}`;
-                    else
-                        offset_minutes_string = `${offset_minutes}`;
-
-                    if (offset_seconds < 0)
-                        utc_string = `UTC -${offset_hours_string}:${offset_minutes_string}`;
-                    if (offset_seconds > 0)
-                        utc_string = `UTC +${offset_hours_string}:${offset_minutes_string}`;
-
-                    $("#address .ip_info_value").text(given_ip);
-                    $("#location .ip_info_value").text(data["city"] + ", " + data["zip"] + " " + data["regionName"]);
-                    $("#timezone .ip_info_value").text(utc_string);
-                    $("#isp .ip_info_value").text(data["isp"]);
-                    
-                }
-                else {
-
-                    window.alert("Can't find specified domain/IP. Sorry!");
-                    //window.location.reload();
-
-                }
-            }
-        ).fail( () => {}).always( () => {} );
+        return_lat = geolocation["lat"];
+        return_lon = geolocation["lng"];
         
-    }
-    if( !isIPAddress(given_ip) && !isValidURL(given_ip) ) {
-        window.alert("Invalid domain/IP!");
-    }
+        console.log(data)
+
+        if (return_lat != undefined && return_lon != undefined){
+
+            setLocationOnMap(return_lat, return_lon, 12);
+
+            $("#address .ip_info_value").text(data["ip"]);
+            $("#location .ip_info_value").text(geolocation["city"] + ", " + geolocation["postalCode"] + " " + geolocation["region"]);
+            $("#timezone .ip_info_value").text(`UTC${geolocation["timezone"]}`);
+            $("#isp .ip_info_value").text(data["isp"]);
+            
+        }
+        else {
+
+            window.alert("Can't find specified domain/IP. Sorry!");
+            window.location.reload();
+
+        }
+    }).fail( () => {}).always( () => {} );
+
     
 }
