@@ -8,27 +8,66 @@
   
   <title>Frontend Mentor | IP Address Tracker</title>
 
-  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
-  <style>
-    .attribution { font-size: 11px; text-align: center; }
-    .attribution a { color: hsl(228, 45%, 44%); }
-  </style>
+  <link rel="stylesheet" href="index.css">
+  
+  <!-- jQuery -->
+  
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  
+  <!-- Leaflet API -->
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+
+  <!-- IPify Geoloc -->
+
 </head>
 <body>
 
-  IP Address Tracker
-
-  Search for any IP address or domain
-
-  IP Address
-  Location
-  Timezone
-    UTC <!-- add offset value dynamically using the API -->
-  ISP
+  <header id="ip_banner">
+    <h1 class="ip_title">IP Address Tracker</h1>
+    <form class="ip_input">
+      <input type="text" class="ip_input_text" id="ip" placeholder="Search for any IP address or domain" onfocus="this.value=''">   
+      <button class="ip_input_button" onclick="getGeolocationFromIp($('#ip').val())"><img src="images/icon-arrow.svg" alt=""></button>
+    </form>
+  </header>
   
-  <div class="attribution">
-    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
-    Coded by <a href="#">Your Name Here</a>.
-  </div>
+  <main class="ip_info_wrapper">
+
+    <section class="ip_info_field" id="address">
+      <h2 class="ip_info_header">IP Address</h2>
+      <h3 class="ip_info_value"></h3>
+    </section>
+
+    <section class="ip_info_field" id="location">
+      <h2 class="ip_info_header">Location</h2>
+      <h3 class="ip_info_value"></h3>
+    </section>
+
+    <section class="ip_info_field" id="timezone">
+      <h2 class="ip_info_header">Timezone</h2>
+      <h3 class="ip_info_value"></h3> 
+    </section>
+
+    <section class="ip_info_field" id="isp">
+      <h2 class="ip_info_header">ISP</h2>
+      <h3 class="ip_info_value"></h3>
+    </section>
+    
+  </main>
+    
+  <div id="mapid"></div>
+
+  <!-- My geofetch script -->
+  <script src="tracker.js"></script>
+
+  <footer class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a> | 
+    Coded by <a href="https://github.com/KamilRybacki">Kamil Rybacki</a>
+  </footer>
 </body>
 </html>
